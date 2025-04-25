@@ -8,8 +8,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { PlusCircleIcon }  from '@heroicons/react/24/solid';
+import { PlusCircleIcon, TrashIcon }  from '@heroicons/react/24/solid';
 import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 
 export const CreateRecipeForm: FC = (): ReactElement => {
     const [ ingredients, setIngredients ] = useState<string[]>([]);
@@ -27,6 +28,14 @@ export const CreateRecipeForm: FC = (): ReactElement => {
         }
         setInputValue("");
     };
+
+    const deleteIngredient = (index: number) => {
+        const tempIngredients = [...ingredients];
+        const i = tempIngredients.splice(index, 1);
+        console.log(i);
+        console.log(tempIngredients);
+        setIngredients(tempIngredients);
+    }
 
     return (
         <div>
@@ -82,15 +91,31 @@ export const CreateRecipeForm: FC = (): ReactElement => {
                         <PlusCircleIcon className="size-9 text-sky-600 cursor-pointer" onClick={addNewIngredient} />
                     </div>
                     {ingredients.length > 0 && (
-                        <div className="py-1 border-b border-sky-200 text-sm text-gray-400">
+                        <div className="flex gap-1 py-1">
                             {/**ADD FUNCTIONALITY TO DELETE AN INGREDIENT TOO */}
-                            <p>{ingredients.map(item => item.at(0)?.toUpperCase() + item.substring(1)).join(", ")}</p>
+                            {ingredients.map((item, index) => (
+                                <div className="relative">
+                                    <Badge
+                                        key={index}
+                                        variant="outline"
+                                        className=" border-sky-200 text-sm text-gray-400"
+                                    >
+                                        {item}
+                                    </Badge>
+                                    <TrashIcon 
+                                        className="size-3.5 text-red-600 cursor-pointer absolute -top-1 -right-1"
+                                        onClick={() => deleteIngredient(index)}
+                                    />
+                                </div>
+                                
+                            ))}
+                            {/*<p>{ingredients.map(item => item.at(0)?.toUpperCase() + item.substring(1)).join(", ")}</p> */}
                         </div>
                     )}
                 </div>
                 <div className="py-2 flex flex-row gap-2 items-center w-2/3 mb-1">
                     <Input type="number" placeholder="Preparation Time" />
-                    <span className="font-medium text-md">mins</span>
+                    <span className="font-bold text-sm">mins</span>
                 </div>
                 <div className="py-2 flex justify-end">
                     <Button className="bg-sky-600 cursor-pointer hover:bg-sky-800 hover:text-gray-300">Create recipe</Button>

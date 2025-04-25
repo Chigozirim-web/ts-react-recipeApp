@@ -8,17 +8,32 @@ import {
   } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { IRecipe } from '@/types/recipe.interface';
+import { RecipeView } from '../recipeView/recipeView';
   
 
 export const Recipe: FC<IRecipe> = (props): ReactElement => {
-    const recipe = props;
+    const recipe: IRecipe = props;
 
     const formatedDate = new Date(recipe.createdAt).toLocaleDateString('en-GB', {
         day: "numeric",
         month: "short",
         year: "numeric",
     });
+
+    //const [ showModal, setShowModal] = useState<boolean>(false);
+
+    /*const showRecipe = () => {
+        if(showModal) {
+            setShowModal(false);
+        } else {
+            setShowModal(true);
+        }
+    }*/
 
     return (
         <Card className='text-gray-500 w-full'>
@@ -53,13 +68,17 @@ export const Recipe: FC<IRecipe> = (props): ReactElement => {
 
             </CardContent>
             <CardFooter>
-                <Button 
-                    variant="outline" 
-                    className="bg-gray-200 hover:bg-gray-300 hover:text-gray-800 cursor-pointer"
-                    onClick={() => {}}
-                >
-                    View Recipe
-                </Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button 
+                            variant="outline" 
+                            className="bg-gray-200 hover:bg-gray-300 hover:text-gray-800 cursor-pointer"
+                        >
+                            View Recipe
+                        </Button>
+                    </DialogTrigger>
+                    <RecipeView {...recipe} />
+                </Dialog>
             </CardFooter>
         </Card>
     );

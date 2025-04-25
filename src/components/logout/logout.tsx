@@ -1,5 +1,5 @@
 export const Logout = () => {
     return (
-        <div>Logout</div>
+        <div>(Logout)</div>
     );
 }
