@@ -22,10 +22,11 @@ export enum RecipeMeal {
 };
 
 export interface IRecipe {
+    _id?: string
     name: string;
     ingredients: string[];
     category: RecipeCategory[];
     meal: RecipeMeal[];
     preparationTime: number;
-    createdAt: Date;
+    createdAt?: Date;
 };

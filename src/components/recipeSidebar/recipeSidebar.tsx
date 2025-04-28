@@ -7,8 +7,8 @@ import styles from "./style.module.css"
 
 export const RecipeSidebar: FC = (): ReactElement => {
     return(
-        <section className={`fixed top-43 right-8 ${styles.sidebarHeight}`}>
-            <Card className='flex flex-col w-full h-full p-6 justify-between text-gray-500'>
+        <section className={`top-23 right-8 h-2/3 mt-7 ${styles.sidebarHeight}`}>
+            <Card className='flex flex-col w-full p-6 justify-between text-gray-500'>
                 <CreateRecipeForm />
                 <Logout />
             </Card>

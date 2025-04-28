@@ -1,100 +1,116 @@
-import { FC, ReactElement, useState, useEffect } from "react";
-import { IRecipe, RecipeCategory, RecipeMeal } from "@/types/recipe.interface";
+import { FC, ReactElement, SetStateAction, useEffect, useState } from "react";
+import {
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircleIcon, TrashIcon }  from '@heroicons/react/24/solid';
-import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useCreateRecipe } from "@/hooks/createRecipe.hook";
-import { Toaster } from "@/components/ui/sonner";
+import { PlusCircleIcon, TrashIcon }  from '@heroicons/react/24/solid';
+import { IRecipe, RecipeCategory, RecipeMeal } from "@/types/recipe.interface";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { IUpdateRecipe } from "@/types/updateRecipe.interface";
+import { useUpdateRecipe } from '@/hooks/updateRecipe.hook';
+import { useCloseModal } from "@/hooks/closeModal.hook";
+import { useQueryClient } from '@tanstack/react-query';
 
-export const CreateRecipeForm: FC = (): ReactElement => {
-    const [newRecipe, setNewRecipe] = useState<IRecipe>({
-        name: "",
-        ingredients: [],
-        category: [],
-        meal: [],
-        preparationTime: 0
-    });
+export const UpdateRecipeView: FC<IRecipe> = (props): ReactElement => {
+    const { name, ingredients, category, meal, preparationTime, _id } = props;
+    const [updatedRecipe, setUpdatedRecipe] = useState<IUpdateRecipe>(
+        {
+            _id: _id ?? "", //but it will always have id though since it's fetched from DB
+            name: name,
+            ingredients: ingredients,
+            category: category,
+            meal: meal,
+            preparationTime: preparationTime
+        }
+    );
+    const [inputValue, setInputValue] = useState<string>("");
+    const { mutate, isSuccess } = useUpdateRecipe();
+    
+    //const queryClient = useQueryClient();
+    const {dismiss } = useCloseModal();
 
+    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setNewRecipe(prevRecipe => ({...prevRecipe, [name]: value}))
+        setUpdatedRecipe(prevRecipe => ({...prevRecipe, [name]: value}))
     }
-     
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleCheckedChange = (name: string, value: any[]) => {
-        setNewRecipe(prevRecipe => ({...prevRecipe, [name]: value}))
+        setUpdatedRecipe(prevRecipe => ({...prevRecipe, [name]: value}))
     }
     
     const addNewIngredient = () => {
         if(inputValue !== ""){    
-            const tempIngredients = [...newRecipe.ingredients];
+            const tempIngredients = updatedRecipe.ingredients ?? [];
             tempIngredients.push(inputValue);
-            setNewRecipe(prevRecipe => ({...prevRecipe, ["ingredients"]: tempIngredients}))
+            setUpdatedRecipe(prevRecipe => ({...prevRecipe, ["ingredients"]: tempIngredients}))
         }
         setInputValue("");
     };
 
     const deleteIngredient = (index: number) => {
-        const tempIngredients = [...newRecipe.ingredients];
-        tempIngredients.splice(index, 1);
-        setNewRecipe(prevRecipe => ({...prevRecipe, ["ingredients"]: tempIngredients}))
+        const tempIngredients = updatedRecipe.ingredients ?? [];
+        const i = tempIngredients.splice(index, 1);
+        console.log(i, tempIngredients);
+        setUpdatedRecipe(prevRecipe => ({...prevRecipe, ["ingredients"]: tempIngredients}))
     }
-   
-
-    const [inputValue, setInputValue] = useState<string>("");
-    const saveInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        
+    
+    const saveInput = (e: { target: { value: SetStateAction<string>; }; }) => {
         setInputValue(e.target.value); //check type of "e"
     };
-
-    const {mutate, isSuccess, isError, isPending} = useCreateRecipe();
-    const queryClient = useQueryClient();
+    
 
     const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        mutate(newRecipe);
+        
+        mutate(updatedRecipe);
     }
 
     useEffect(() => {
         if(isSuccess) {
-            toast("New Recipe Created")
-            
-            queryClient.invalidateQueries({
+            //toast("Recipe Successfully Updated")
+            //still some error here. After 1st dismiss it closes if you click a button
+
+           /* queryClient.invalidateQueries({
                 queryKey: ["fetchRecipes"],
                 refetchType: "all"
-            })
+            });
+            */
         }
-        if(isError) {
-            toast("Some error occured while adding new recipe")
-        }
-        setNewRecipe({
-            name: "",
-            ingredients: [],
-            category: [],
-            meal: [],
-            preparationTime: 0
-        });
-    }, [isError, isSuccess]);
+        
+        //setUpdatedRecipe({...updatedRecipe});
+    }, [dismiss, isSuccess, updatedRecipe])
+
 
     return (
-        <div>
-            <h2 className="text-xl mb-4 text-center">Add a new recipe</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="py-2 mb-1">
+        <DialogContent className="sm:max-w-xl px-8 py-4">
+            <DialogHeader>
+                <DialogTitle className="font-bold text-gray-600 text-center">{name}</DialogTitle>
+                <DialogDescription className="text-center">
+                    Make changes to recipe
+                </DialogDescription>
+            </DialogHeader>
+            <form className="border-b" onSubmit={handleSubmit}>
+                <div className="py-2">
                     <Input 
                         type="text" 
                         name="name" 
                         placeholder="Recipe Name" 
-                        value={newRecipe.name} 
+                        value={updatedRecipe.name} 
                         onChange={handleChange} 
                         required
                     />
                 </div>
-                <div className="flex flex-row justify-between py-2 mb-1">
+                <div className="flex flex-row justify-between py-2">
                     <div className="w-full mr-2">
                         <h3 className="font-medium">Category</h3>
                         <p className="text-sm mb-2">Select all that applies</p>
@@ -107,13 +123,14 @@ export const CreateRecipeForm: FC = (): ReactElement => {
                                     id={item}
                                     value={item}
                                     className="border-sky-400"
-                                    required={newRecipe.category?.length == 0}
-                                    checked={newRecipe.category?.includes(item)}
+                                    required={updatedRecipe.category?.length == 0}
+                                    checked={updatedRecipe.category?.includes(item)}
                                     onCheckedChange={(checked) => {
+                                        const category = updatedRecipe.category ?? [];
                                         return checked
-                                        ? handleCheckedChange("category",[...newRecipe.category, item])
+                                        ? handleCheckedChange("category",[...category, item])
                                         : handleCheckedChange("category",
-                                            newRecipe.category.filter(
+                                            category.filter(
                                                 (val) => val != item 
                                             )
                                         )
@@ -140,13 +157,14 @@ export const CreateRecipeForm: FC = (): ReactElement => {
                                     id={item}
                                     value={item}
                                     className="border-sky-400"
-                                    required={newRecipe.meal?.length == 0}
-                                    checked={newRecipe.meal?.includes(item)}
+                                    required={updatedRecipe.meal?.length == 0}
+                                    checked={updatedRecipe.meal?.includes(item)}
                                     onCheckedChange={(checked) => {
+                                        const meal = updatedRecipe.meal ?? [];
                                         return checked
-                                        ? handleCheckedChange("meal",[...newRecipe.meal, item])
+                                        ? handleCheckedChange("meal",[...meal, item])
                                         : handleCheckedChange("meal",
-                                            newRecipe.meal.filter(
+                                            meal.filter(
                                                 (val) => val != item 
                                             )
                                         )
@@ -162,7 +180,7 @@ export const CreateRecipeForm: FC = (): ReactElement => {
                         ))}
                     </div>
                 </div>
-                <div className="py-2 flex flex-col gap-2 mb-1">
+                <div className="py-2 flex flex-col gap-2">
                     <div className="flex flex-row gap-2 items-center">
                         <Input 
                             value={inputValue} 
@@ -172,13 +190,13 @@ export const CreateRecipeForm: FC = (): ReactElement => {
                             onKeyDown={(e) => { 
                                 if (e.key === 'Enter') return e.preventDefault()
                             }}
-                            required={newRecipe.ingredients?.length == 0}
+                            required={updatedRecipe.ingredients?.length == 0}
                         />
                         <PlusCircleIcon className="size-9 text-sky-400 cursor-pointer" onClick={addNewIngredient} />
                     </div>
-                    {newRecipe.ingredients.length > 0 && (
+                    { updatedRecipe.ingredients && updatedRecipe.ingredients.length > 0 && (
                         <div className="flex flex-wrap gap-1 py-1">
-                            {newRecipe.ingredients.map((item, index) => (
+                            {updatedRecipe.ingredients.map((item, index) => (
                                 <div className="relative" key={index}>
                                     <Badge
                                         key={index}
@@ -194,28 +212,32 @@ export const CreateRecipeForm: FC = (): ReactElement => {
                                 </div>
                                 
                             ))}
-                            {/*<p>{ingredients.map(item => item.at(0)?.toUpperCase() + item.substring(1)).join(", ")}</p> */}
                         </div>
                     )}
                 </div>
-                <div className="py-2 flex flex-row gap-2 items-center w-2/3 mb-1">
+                <div className="py-2 flex flex-row gap-2 items-center w-1/2">
                     <Input 
                         type="number"
                         name="preparationTime"
                         placeholder="Preparation Time"
-                        value={newRecipe.preparationTime}
+                        value={updatedRecipe.preparationTime}
                         onChange={handleChange}
                         min={0}
-                        required={newRecipe.preparationTime == 0}
+                        required={updatedRecipe.preparationTime == 0}
                     />
                     <span className="font-bold text-sm">mins</span>
                 </div>
-                <div className="py-2 flex justify-end">
-                    <Button className="bg-sky-400 cursor-pointer hover:bg-sky-800 hover:text-gray-300">Create recipe</Button>
+                <div className="py-2 flex justify-center">
+                    <Button type="submit" className="mb-3 bg-sky-400 cursor-pointer hover:bg-sky-800 hover:text-gray-300">Update recipe</Button>
                 </div>
             </form>
-            <Toaster />
-        </div>
+            <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                    <Button className='border-gray-300 bg-gray-200 hover:bg-gray-300 hover:text-gray-800 cursor-pointer' type="button" variant="outline">
+                        Close
+                    </Button>
+                </DialogClose>
+            </DialogFooter>
+      </DialogContent>
     );
 }
-
