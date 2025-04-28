@@ -12,28 +12,19 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Toaster } from "@/components/ui/sonner";
 import { IRecipe } from '@/types/recipe.interface';
 import { RecipeView } from '../recipeView/recipeView';
-  
+import { UpdateRecipeView } from '../updateRecipe/updateRecipeView';
 
 export const Recipe: FC<IRecipe> = (props): ReactElement => {
     const recipe: IRecipe = props;
 
-    const formatedDate = new Date(recipe.createdAt).toLocaleDateString('en-GB', {
+    const formatedDate = recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString('en-GB', {
         day: "numeric",
         month: "short",
         year: "numeric",
-    });
-
-    //const [ showModal, setShowModal] = useState<boolean>(false);
-
-    /*const showRecipe = () => {
-        if(showModal) {
-            setShowModal(false);
-        } else {
-            setShowModal(true);
-        }
-    }*/
+    }) : "" ;
 
     return (
         <Card className='text-gray-500 w-full'>
@@ -43,7 +34,7 @@ export const Recipe: FC<IRecipe> = (props): ReactElement => {
                     <Badge className='text-gray-500' variant="outline">{formatedDate}</Badge>
                 </div>
             </CardHeader>
-            <CardContent className='flex flex-row gap-2'>
+            <CardContent className='flex flex-wrap flex-row gap-2'>
                 {recipe.category.map((x, index) => (
                     <Badge 
                     key={x + index} 
@@ -67,17 +58,31 @@ export const Recipe: FC<IRecipe> = (props): ReactElement => {
                 ))}
 
             </CardContent>
-            <CardFooter>
+            <CardFooter className='flex flex-row gap-4 items-center mt-2'>
+                {/** ADD ANOTHER DIALOG HERE FOR UPDATING A TASK!! */}
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button 
                             variant="outline" 
-                            className="bg-gray-200 hover:bg-gray-300 hover:text-gray-800 cursor-pointer"
+                            className="p-2 border-gray-300 bg-gray-200 hover:bg-gray-300 hover:text-gray-800 cursor-pointer"
                         >
                             View Recipe
                         </Button>
                     </DialogTrigger>
                     <RecipeView {...recipe} />
+                </Dialog>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button 
+                            variant="outline" 
+                            className="p-2 border-gray-300 bg-gray-200 hover:bg-gray-300 hover:text-gray-800 cursor-pointer"
+                        >
+                            Update Recipe
+                        </Button>
+                    </DialogTrigger>
+                    <UpdateRecipeView {...recipe} />
+                    
+                    <Toaster key={recipe._id} />
                 </Dialog>
             </CardFooter>
         </Card>

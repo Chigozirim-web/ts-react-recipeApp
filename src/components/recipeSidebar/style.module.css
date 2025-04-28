@@ -1,4 +1,3 @@
 .sidebarHeight {
-    height: calc(100vh - 17rem);
     min-width: 400px;
 }

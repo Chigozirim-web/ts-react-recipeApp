@@ -25,7 +25,7 @@ export const RecipeView: FC<IRecipe> = (props): ReactElement => {
                     {name}
                 </DialogTitle>
                 <DialogDescription>
-                    <div className='flex flex-row items-center gap-1 mt-2'>
+                    <span className='flex flex-row items-center gap-1 mt-2'>
                         {category.map((x, index) => (
                             <Badge 
                                 key={index}
@@ -49,7 +49,7 @@ export const RecipeView: FC<IRecipe> = (props): ReactElement => {
                                 {x}
                             </Badge>
                         ))}
-                    </div>
+                    </span>
                 </DialogDescription>
             </DialogHeader>
 
