@@ -1,3 +1,10 @@
+# The frontend of a recipe management application built with React + TypeScript + Vite
+
+Also utilized in this project are:
+- Shadcnui -> for layout and components
+- Tailwindcss -> for css styling
+- TanStackQuery -> for client-to-server integration
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
