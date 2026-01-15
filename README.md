@@ -1,61 +1,37 @@
-# The frontend of a recipe management application built with React + TypeScript + Vite
+# Recipe Management App (Frontend)
 
-Also utilized in this project are:
-- Shadcnui -> for layout and components
-- Tailwindcss -> for css styling
-- TanStackQuery -> for client-to-server integration
+A **React + TypeScript + Vite** frontend application that lets users add and view recipes. This project demonstrates component design with type safety, responsive UI, and client-server integration patterns.
 
-# React + TypeScript + Vite
+## Features
+- Users can **create new recipes** and view existing ones
+- Built with reusable components
+- Tailwind CSS for responsive styling
+- Client-server data management (designed to integrate with a backend)
+- Type safety throughout with TypeScript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Tech Stack
+- React + TypeScript  
+- Vite  
+- Tailwind CSS  
+- shadcn/ui (UI components)  
+- TanStack Query (optional for future API integration)
 
-Currently, two official plugins are available:
+## Local Setup
+1. Clone the repo  
+   ```
+   git clone https://github.com/Chigozirim-web/ts-react-recipeApp.git
+   cd ts-react-recipeApp
+2. Install dependencies
+  ```bash
+  npm install
+  ```
+3. Run development server
+  ```
+  npm run dev
+  ```
+Open http://localhost:5173
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Future Improvements
+- Add backend integration for storing and retrieving recipes
+- Add user authentication and profiles
+- Add filters, search, and categories
